@@ -1,3 +1,4 @@
+import java.awt.*;
 import java.util.Random;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -9,11 +10,12 @@ public class Main {
     static MainWindow window = new MainWindow(new RightLeftSpaceListener(), screenWidth, screenHeight);
     static int gunX = screenWidth / 2, gunY = screenHeight - 1;
     private static final char gunSymbol = '|';
-    private static final int maxBulletsPerQueue = 3;
+    private static final int maxBulletsPerQueue = 3, maxMiss = 30;
     static AtomicInteger hit = new AtomicInteger(0), miss = new AtomicInteger(0);
 
     public static Semaphore bulletSemaphore = new Semaphore(maxBulletsPerQueue, true);
     private static ReentrantLock randomLock = new ReentrantLock();
+    private static ReentrantLock gameOver = new ReentrantLock();
 
     public static void main(String[] args) {
         window.setSymbol(gunX, gunY, gunSymbol);
@@ -43,5 +45,29 @@ public class Main {
         int randomInt = rnd.nextInt(limit);
         randomLock.unlock();
         return randomInt;
+    }
+
+    public static void IncHit(){
+        hit.addAndGet(1);
+        window.updateTitle();
+    }
+
+    public static void IncMiss(){
+        miss.addAndGet(1);
+        window.updateTitle();
+        if (miss.get() >= maxMiss) {
+            gameOver();
+        }
+    }
+
+    static synchronized void gameOver(){
+        gameOver.lock();
+        Frame finalFrame = new Frame();
+        finalFrame.setTitle("The War Of Threads");
+        finalFrame.setSize(300,200);
+        Label text = new Label("Game over!");
+        text.setBounds(150,50,100,100);
+        finalFrame.add(text);
+        finalFrame.setVisible(true);
     }
 }

@@ -1,7 +1,7 @@
 import java.util.Iterator;
 
 public class BadguyThread extends Thread {
-    private static final int sleepBadguyTime = 40;
+    private static final int sleepBadguyTime = 400;
 
     @Override
     public void run() {
@@ -20,15 +20,27 @@ public class BadguyThread extends Thread {
         }
 
         while (badguyX != boundX){
-            Main.window.setSymbol(badguyX, badguyY, body.next());
+            if (!Main.window.isNotFree(badguyX, badguyY)) {
+                Main.window.setSymbol(badguyX, badguyY, body.next());
+            } else {
+                Main.IncHit();
+                Main.window.removeSymbol(badguyX, badguyY);
+                break;
+            }
             try {
                 sleep(sleepBadguyTime);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            Main.window.removeSymbol(badguyX, badguyY);
+            if (Main.window.isNotFree(badguyX, badguyY)) {
+                Main.window.removeSymbol(badguyX, badguyY);
+            } else {
+                return;
+            }
 
             badguyX += increment;
         }
+
+        Main.IncMiss();
     }
 }

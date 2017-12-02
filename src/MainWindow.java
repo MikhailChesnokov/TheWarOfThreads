@@ -16,6 +16,7 @@ class MainWindow extends Frame{
         setLayout(null);
         setVisible(true);
         addKeyListener(keyListener);
+        setTitle("Война потоков - попаданий: 0, промахов: 0");
     }
 
     private int toPixelCoordinateX(int x){
@@ -42,7 +43,11 @@ class MainWindow extends Frame{
         screenLock.unlock();
     }
 
-    boolean isFree(int x, int y){
-        return getComponentAt(x,y) != null;
+    boolean isNotFree(int x, int y){
+        return !getComponentAt(toPixelCoordinateX(x),toPixelCoordinateY(y)).getName().equals("frame0");
+    }
+
+    void updateTitle(){
+        setTitle(String.format("Война потоков - попаданий: %d, промахов: %d", Main.hit.get(), Main.miss.get()));
     }
 }
