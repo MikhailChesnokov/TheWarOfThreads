@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.util.concurrent.locks.ReentrantLock;
 
 class MainWindow extends Frame{
     private static final int
@@ -7,6 +8,8 @@ class MainWindow extends Frame{
             baseX = 8, baseY = 31,
             symbolWidth = 16, symbolHeight = 16;
     private static Font defaultFont = new Font(Font.MONOSPACED, Font.PLAIN, symbolHeight);
+
+    private static ReentrantLock screenLock = new ReentrantLock();
 
     MainWindow(KeyListener keyListener, int screenWidth, int screenHeight){
         setSize(baseX + screenOffset + screenWidth * symbolWidth, baseY + screenOffset + screenHeight * symbolHeight);
@@ -27,11 +30,16 @@ class MainWindow extends Frame{
         Label label = new Label(String.valueOf(symbol));
         label.setFont(defaultFont);
         label.setBounds(toPixelCoordinateX(x), toPixelCoordinateY(y), symbolWidth, symbolHeight);
+        screenLock.lock();
         add(label);
+        screenLock.unlock();
     }
 
     void removeSymbol(int x, int y){
-        remove(getComponentAt(toPixelCoordinateX(x),toPixelCoordinateY(y)));
+        Component component = getComponentAt(toPixelCoordinateX(x),toPixelCoordinateY(y));
+        screenLock.lock();
+        remove(component);
+        screenLock.unlock();
     }
 
     boolean isFree(int x, int y){
