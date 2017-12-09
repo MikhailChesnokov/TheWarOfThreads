@@ -11,8 +11,10 @@ public class Main {
     static int gunX = screenWidth / 2, gunY = screenHeight - 1;
     private static final char gunSymbol = '|';
     private static final int maxBulletsPerQueue = 3, maxMiss = 30;
-    static AtomicInteger hit = new AtomicInteger(0), miss = new AtomicInteger(0);
 
+    static AtomicInteger
+            hit = new AtomicInteger(0),
+            miss = new AtomicInteger(0);
     public static Semaphore bulletSemaphore = new Semaphore(maxBulletsPerQueue, true);
     private static ReentrantLock randomLock = new ReentrantLock();
     private static ReentrantLock gameOver = new ReentrantLock();
@@ -60,7 +62,7 @@ public class Main {
         }
     }
 
-    static synchronized void gameOver(){
+    private static void gameOver(){
         gameOver.lock();
         Frame finalFrame = new Frame();
         finalFrame.setTitle("The War Of Threads");
